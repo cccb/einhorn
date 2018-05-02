@@ -15,4 +15,5 @@ $(PROG): main.o
 
 clean:
 	rm -f *.o
+	rm -rf *.o*
 	rm -f $(PROG) 
