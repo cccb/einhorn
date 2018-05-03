@@ -10,6 +10,8 @@
 typedef struct {
     lua_State* L;
     einhorn_config* config;
+
+    double* framebuffer;
 } einhorn_engine;
 
 

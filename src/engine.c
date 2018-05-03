@@ -2,10 +2,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <time.h>
 #include <sys/time.h>
 
 #include "engine.h"
+#include "framebuffer.h"
 
 void engine_lua_error(lua_State *L);
 
@@ -35,6 +37,13 @@ einhorn_engine* engine_init(einhorn_config* config)
         return NULL;
     }
 
+    // Initialize framebuffer
+    engine->framebuffer = framebuffer_init(engine);
+    if (!engine->framebuffer) {
+        fprintf(stderr, "Allocating the framebuffer failed.\n");
+        return NULL;
+    }
+
     return engine;
 }
 
@@ -43,7 +52,22 @@ einhorn_engine* engine_init(einhorn_config* config)
  */
 double engine_get_timedelta(struct timeval t0, struct timeval t1)
 {
-    return (t1.tv_sec - t0.tv_sec) + (t1.tv_usec - t0.tv_usec) / 1000000.0f;
+    return (t1.tv_sec - t0.tv_sec) + (t1.tv_usec - t0.tv_usec) / 1000000.0;
+}
+
+/*
+ * Helper: Limit FPS
+ */
+void engine_limit_fps(double fps)
+{
+    double timeout = 1.0 / fps;
+    // Convert to timeval
+    double nsec = fmod(timeout, 1.0) * 1000000000.0; 
+    struct timespec timeout_val = {
+        .tv_sec = (int)timeout,
+        .tv_nsec = (int)nsec,
+    };
+    nanosleep(&timeout_val, NULL);
 }
 
 /*
@@ -53,7 +77,7 @@ int engine_call_render(einhorn_engine* engine, double t)
 {
     // Push args on the stack
     lua_getglobal(engine->L, "render");
-    lua_pushnumber(engine->L, 42);
+    lua_pushlightuserdata(engine->L, engine->framebuffer);
     lua_pushnumber(engine->L, t);
 
     // Call render function with two arguments (fb and time)
@@ -86,7 +110,8 @@ int engine_run(einhorn_engine* engine)
         if (ret != 0) {
             return -1;
         }
-        usleep(1000000.0 * 1.0 / 60.0);
+
+        engine_limit_fps(60.0);
     }
       
     return 0;

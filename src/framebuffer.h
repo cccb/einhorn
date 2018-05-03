@@ -1,8 +1,8 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
-#include <lua.h>
+#include "engine.h"
 
-void framebuffer_init(lua_State* L);
+double* framebuffer_init(einhorn_engine* engine);
 
 #endif
