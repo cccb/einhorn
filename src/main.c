@@ -48,6 +48,10 @@ int main(int argc, const char** argv)
 
     // Initialize engine
     einhorn_engine* engine = engine_init(config);
+    if (!engine) {
+        fprintf(stderr, "Engine initialization failed.\n");
+        return -1;
+    }
 
     // Start rendering
     engine_run(engine);

@@ -14,7 +14,6 @@ typedef struct {
     unsigned int fb_height;
 } einhorn_config;
 
-
 einhorn_config* config_parse_args(int argc, const char** argv);
 int config_validate(einhorn_config* config);
 void config_print(einhorn_config* config);

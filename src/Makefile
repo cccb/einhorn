@@ -3,7 +3,7 @@ PROG = einhorn
 CC = gcc
 
 CFLAGS ?= -Wall -std=c11 -g
-LDFLAGS ?=
+LDFLAGS ?= -llua
 
 
 %.o: %.c

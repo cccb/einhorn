@@ -16,5 +16,4 @@ typedef struct {
 einhorn_engine* engine_init(einhorn_config* config);
 int engine_run(einhorn_engine* engine);
 
-
 #endif
