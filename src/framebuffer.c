@@ -24,6 +24,7 @@
 #include "framebuffer.h"
 
 int l_framebuffer_debug(lua_State* L);
+int l_framebuffer_getpixel(lua_State* L);
 int l_framebuffer_setpixel(lua_State* L);
 
 double* framebuffer_init(einhorn_engine* engine)
@@ -36,16 +37,21 @@ double* framebuffer_init(einhorn_engine* engine)
     buffer[1] = engine->config->fb_height;
 
     // Register framebuffer library
-    lua_newtable(engine->L);
-    lua_pushstring(engine->L, "debug");
-    lua_pushcfunction(engine->L, l_framebuffer_debug);
-    lua_settable(engine->L, -3);
+    // lua_newtable(engine->L);
+    if(luaL_newmetatable(engine->L, "framebuffer")) {
 
-    lua_pushstring(engine->L, "setpixel");
-    lua_pushcfunction(engine->L, l_framebuffer_setpixel);
-    lua_settable(engine->L, -3);
+        lua_pushcfunction(engine->L, l_framebuffer_debug);
+        lua_setfield(engine->L, -2, "debug");
 
-    lua_setglobal(engine->L, "framebuffer");
+        lua_pushcfunction(engine->L, l_framebuffer_setpixel);
+        lua_setfield(engine->L, -2, "setpixel");
+
+        lua_pushcfunction(engine->L, l_framebuffer_getpixel);
+        lua_setfield(engine->L, -2, "getpixel");
+
+        lua_pushvalue(engine->L, -1);
+        lua_setfield(engine->L, -2, "__index");
+    }
 
     return buffer;
 }
@@ -124,17 +130,6 @@ int l_framebuffer_debug(lua_State* L)
 }
 
 /*
- * Helper: get number from table
- */
-double lua_table_get_number(lua_State* L, int table, int index)
-{
-    lua_pushnumber(L, index);
-    lua_gettable(L, table);
-
-    return luaL_optnumber(L, -1, 0.0);
-}
-
-/*
  * Set framebuffer value
  */
 int l_framebuffer_setpixel(lua_State* L)
@@ -146,23 +141,18 @@ int l_framebuffer_setpixel(lua_State* L)
     size_t width = (size_t)buffer[0];
     size_t height = (size_t)buffer[1];
 
-    // Second param should be a table with x, y coordinates
-    // third a table with rgba values
-    luaL_checktype(L, 2, LUA_TTABLE);
-    luaL_checktype(L, 3, LUA_TTABLE);
-    
     // Get position
-    int x = (int)lua_table_get_number(L, 2, 1) - 1;
-    int y = (int)lua_table_get_number(L, 2, 2) - 1; 
+    int x = (int)luaL_checknumber(L, 2) - 1;
+    int y = (int)luaL_checknumber(L, 3) - 1;
 
     luaL_argcheck(L, x >= 0 && x < width,  2, "invalid index for position.x");
     luaL_argcheck(L, y >= 0 && y < height, 2, "invalid index for position.y");
 
     // Get r, g, b
-    double r = lua_table_get_number(L, 3, 1);
-    double g = lua_table_get_number(L, 3, 2); 
-    double b = lua_table_get_number(L, 3, 3); 
-    double a = lua_table_get_number(L, 3, 4); 
+    double r = luaL_optnumber(L, 4, 0);
+    double g = luaL_optnumber(L, 5, 0);
+    double b = luaL_optnumber(L, 6, 0);
+    double a = luaL_optnumber(L, 7, 0);
 
     framebuffer_set(buffer, x, y, 0, r);
     framebuffer_set(buffer, x, y, 1, g);
@@ -174,7 +164,26 @@ int l_framebuffer_setpixel(lua_State* L)
 
 int l_framebuffer_getpixel(lua_State* L)
 {
-    return 0;
+    // Get framebuffer
+    double* buffer = (double*)lua_touserdata(L, 1);
+    luaL_argcheck(L, buffer != NULL, 1, "expected a framebuffer");
+ 
+    size_t width = (size_t)buffer[0];
+    size_t height = (size_t)buffer[1];
+
+    // Get position
+    int x = (int)luaL_checknumber(L, 2) - 1;
+    int y = (int)luaL_checknumber(L, 3) - 1;
+
+    luaL_argcheck(L, x >= 0 && x < width,  2, "invalid index for position.x");
+    luaL_argcheck(L, y >= 0 && y < height, 2, "invalid index for position.y");
+
+    lua_pushnumber(L, framebuffer_get(buffer, x, y, 0));
+    lua_pushnumber(L, framebuffer_get(buffer, x, y, 1));
+    lua_pushnumber(L, framebuffer_get(buffer, x, y, 2));
+    lua_pushnumber(L, framebuffer_get(buffer, x, y, 3));
+
+    return 4;
 }
 
 

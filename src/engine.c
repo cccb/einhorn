@@ -30,17 +30,17 @@ einhorn_engine* engine_init(einhorn_config* config)
     engine->L = luaL_newstate();
     luaL_openlibs(engine->L);
 
-    // Load program
-    if (luaL_loadfile(engine->L, config->program_filename) 
-        || lua_pcall(engine->L, 0, 0, 0)) {
-            engine_lua_error(engine->L);
-        return NULL;
-    }
-
     // Initialize framebuffer
     engine->framebuffer = framebuffer_init(engine);
     if (!engine->framebuffer) {
         fprintf(stderr, "Allocating the framebuffer failed.\n");
+        return NULL;
+    }
+
+    // Load program
+    if (luaL_loadfile(engine->L, config->program_filename) 
+        || lua_pcall(engine->L, 0, 0, 0)) {
+            engine_lua_error(engine->L);
         return NULL;
     }
 
@@ -78,6 +78,7 @@ int engine_call_render(einhorn_engine* engine, double t)
     // Push args on the stack
     lua_getglobal(engine->L, "render");
     lua_pushlightuserdata(engine->L, engine->framebuffer);
+    luaL_setmetatable(engine->L, "framebuffer");
     lua_pushnumber(engine->L, t);
 
     // Call render function with two arguments (fb and time)
