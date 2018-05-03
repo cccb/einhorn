@@ -9,7 +9,7 @@ LDFLAGS ?=
 %.o: %.c
 	$(CC)  -c $(CFLAGS) -o $@ $^
 
-$(PROG): main.o
+$(PROG): main.o config.o
 	$(CC) $(LDFLAGS) -o $(PROG) $^
 
 
