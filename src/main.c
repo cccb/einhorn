@@ -12,6 +12,7 @@
 
 #include "version.h"
 #include "config.h"
+#include "engine.h"
 
 void usage(const char* progname)
 {
@@ -27,6 +28,7 @@ void usage(const char* progname)
 
 int main(int argc, const char** argv)
 {
+    // Initialize config
     einhorn_config* config = config_parse_args(argc, argv);
     if (!config) {
         usage(argv[0]);
@@ -43,6 +45,12 @@ int main(int argc, const char** argv)
     }
 
     config_print(config);
+
+    // Initialize engine
+    einhorn_engine* engine = engine_init(config);
+
+    // Start rendering
+    engine_run(engine);
 
     return 0;
 }
