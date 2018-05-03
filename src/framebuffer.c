@@ -26,6 +26,7 @@
 int l_framebuffer_debug(lua_State* L);
 int l_framebuffer_getpixel(lua_State* L);
 int l_framebuffer_setpixel(lua_State* L);
+int l_framebuffer_getsize(lua_State* L);
 
 double* framebuffer_init(einhorn_engine* engine)
 {
@@ -37,9 +38,7 @@ double* framebuffer_init(einhorn_engine* engine)
     buffer[1] = engine->config->fb_height;
 
     // Register framebuffer library
-    // lua_newtable(engine->L);
     if(luaL_newmetatable(engine->L, "framebuffer")) {
-
         lua_pushcfunction(engine->L, l_framebuffer_debug);
         lua_setfield(engine->L, -2, "debug");
 
@@ -48,6 +47,9 @@ double* framebuffer_init(einhorn_engine* engine)
 
         lua_pushcfunction(engine->L, l_framebuffer_getpixel);
         lua_setfield(engine->L, -2, "getpixel");
+
+        lua_pushcfunction(engine->L, l_framebuffer_getsize);
+        lua_setfield(engine->L, -2, "getsize");
 
         lua_pushvalue(engine->L, -1);
         lua_setfield(engine->L, -2, "__index");
@@ -186,4 +188,18 @@ int l_framebuffer_getpixel(lua_State* L)
     return 4;
 }
 
+int l_framebuffer_getsize(lua_State* L)
+{
+    // Get framebuffer
+    double* buffer = (double*)lua_touserdata(L, 1);
+    luaL_argcheck(L, buffer != NULL, 1, "expected a framebuffer");
+ 
+    size_t width = (size_t)buffer[0];
+    size_t height = (size_t)buffer[1];
+   
+    lua_pushnumber(L, width);
+    lua_pushnumber(L, height);
+
+    return 2;
+}
 
