@@ -14,6 +14,19 @@ einhorn_engine* engine_init(einhorn_config* config)
         return NULL;
     }
 
+    // Initialize engine
+    engine->config = config;
+
+    // Initialize Lua state
+    
+
+    return engine;
 }
 
+
+int engine_run(einhorn_engine* engine)
+{
+
+    return 0;
+}
 
