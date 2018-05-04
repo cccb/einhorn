@@ -34,7 +34,6 @@ int main(int argc, const char** argv)
     einhorn_config* config = config_parse_args(argc, argv);
     if (!config) {
         usage(argv[0]);
-
         return -1;
     }
 
@@ -42,7 +41,6 @@ int main(int argc, const char** argv)
     if (errors) {
         usage(argv[0]);
         config_print_errors(errors);
-
         return -1;
     }
 
@@ -52,7 +50,6 @@ int main(int argc, const char** argv)
     einhorn_engine* engine = engine_init(config);
     if (!engine) {
         fprintf(stderr, "Engine initialization failed.\n");
-
         return -1;
     }
 
