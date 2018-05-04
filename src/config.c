@@ -12,6 +12,7 @@ enum {
     CONF_OPT_PORT,
     CONF_OPT_WIDTH,
     CONF_OPT_HEIGHT,
+    CONF_OPT_FPS,
 };
 
 enum {
@@ -66,6 +67,7 @@ void config_print(einhorn_config* config)
                                                 config->fb_height);
     printf("Rendering program:\t%s\n", config->program_filename);
     printf("Sending packets to:\t%s:%d\n", config->host, config->port);
+    printf("FPS limit:\t%f\n", config->fps);
 }
 
 /*
@@ -83,6 +85,7 @@ einhorn_config* config_parse_args(int argc, const char** argv)
     config->port = CONF_DEFAULT_PORT;
     config->fb_width = CONF_DEFAULT_FB_WIDTH;
     config->fb_height = CONF_DEFAULT_FB_HEIGHT;
+    config->fps = CONF_DEFAULT_FPS;
 
     int opt = CONF_OPT_NONE;
     for(int i = 1; i < argc; i++) {
@@ -105,6 +108,9 @@ einhorn_config* config_parse_args(int argc, const char** argv)
                     break;
                 case 'h':
                     opt = CONF_OPT_HEIGHT;
+                    break;
+                case 'f':
+                    opt = CONF_OPT_FPS;
                     break;
                 default:
                     opt = CONF_OPT_NONE;
@@ -129,6 +135,8 @@ einhorn_config* config_parse_args(int argc, const char** argv)
                 case CONF_OPT_HEIGHT:
                     config->fb_height = atoi(argv[i]);
                     break;
+                case CONF_OPT_FPS:
+                    config->fps = atof(argv[i]);
             }
 
             opt = CONF_OPT_NONE;

@@ -45,22 +45,17 @@ einhorn_engine* engine_init(einhorn_config* config)
                         "boot") != LUA_OK) {
 
         engine_lua_error(engine->L);
-
         return NULL;
     }
 
     if(lua_pcall(engine->L, 0, 0, 0) != LUA_OK) {
         engine_lua_error(engine->L);
-
         return NULL;
     }
 
     // Load program
-    if (luaL_loadfile(engine->L, config->program_filename) 
-        || lua_pcall(engine->L, 0, 0, 0)) {
-
+    if (luaL_dofile(engine->L, config->program_filename) != LUA_OK) {
         engine_lua_error(engine->L);
-
         return NULL;
     }
 
@@ -105,7 +100,6 @@ int engine_call_render(einhorn_engine* engine, double t)
     int res = lua_pcall(engine->L, 2, 0, 0); 
     if (res != 0) {
         engine_lua_error(engine->L);
-
         return -1;
     }
 
@@ -130,7 +124,7 @@ int engine_run(einhorn_engine* engine)
             return -1;
         }
 
-        engine_limit_fps(30.0);
+        engine_limit_fps(engine->config->fps);
     }
       
     return 0;

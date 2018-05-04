@@ -4,12 +4,15 @@
 #define CONF_DEFAULT_PORT 23042
 #define CONF_DEFAULT_FB_WIDTH 1
 #define CONF_DEFAULT_FB_HEIGHT 14
+#define CONF_DEFAULT_FPS 60.0
 
 typedef struct {
     const char* program_filename;
     const char* host;
     unsigned int port;
 
+    double fps;
+    
     unsigned int fb_width;
     unsigned int fb_height;
 } einhorn_config;

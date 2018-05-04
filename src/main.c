@@ -20,6 +20,8 @@ void usage(const char* progname)
     printf("\nUsage: ");
     printf("%s -t <hostname> -p <port> <program_filename>\n", progname);
     printf("Optional Parameters:\n");
+    printf("\t-f <fps>\t default: %f\tFPS limit\n",
+        CONF_DEFAULT_FPS);
     printf("\t-w <width>\t default: %d\tThe width of the framebuffer\n",
         CONF_DEFAULT_FB_WIDTH);
     printf("\t-h <height>\t default: %d\tThe height of the framebuffer\n",
