@@ -96,14 +96,8 @@ int engine_call_render(einhorn_engine* engine, double t)
     luaL_setmetatable(engine->L, "framebuffer");
     lua_pushnumber(engine->L, t);
 
-    // Call render function with two arguments (fb and time)
-    int res = lua_pcall(engine->L, 2, 0, 0); 
-    if (res != 0) {
-        engine_lua_error(engine->L);
-        return -1;
-    }
-
-    return 0;
+    // Call render function with framebuffer and time
+    return lua_pcall(engine->L, 2, 0, 0); 
 }
 
 /*
@@ -119,8 +113,8 @@ int engine_run(einhorn_engine* engine)
     while(42) {
         gettimeofday(&t1, NULL);
         double t = engine_get_timedelta(t0, t1);
-        int ret = engine_call_render(engine, t); 
-        if (ret != 0) {
+        if(engine_call_render(engine, t) != LUA_OK) {
+            engine_lua_error(engine->L);
             return -1;
         }
 
