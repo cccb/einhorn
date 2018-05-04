@@ -6,6 +6,7 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include "boot.h"
 #include "engine.h"
 #include "framebuffer.h"
 
@@ -37,10 +38,29 @@ einhorn_engine* engine_init(einhorn_config* config)
         return NULL;
     }
 
+    // Load library
+    if (luaL_loadbuffer(engine->L,
+                        (const char*)boot_lua,
+                        boot_lua_len,
+                        "boot") != LUA_OK) {
+
+        engine_lua_error(engine->L);
+
+        return NULL;
+    }
+
+    if(lua_pcall(engine->L, 0, 0, 0) != LUA_OK) {
+        engine_lua_error(engine->L);
+
+        return NULL;
+    }
+
     // Load program
     if (luaL_loadfile(engine->L, config->program_filename) 
         || lua_pcall(engine->L, 0, 0, 0)) {
-            engine_lua_error(engine->L);
+
+        engine_lua_error(engine->L);
+
         return NULL;
     }
 
@@ -85,11 +105,9 @@ int engine_call_render(einhorn_engine* engine, double t)
     int res = lua_pcall(engine->L, 2, 0, 0); 
     if (res != 0) {
         engine_lua_error(engine->L);
+
         return -1;
     }
-
-    // We don't expect it to return anything.
-    // Updates to the framebuffer are done in place.
 
     return 0;
 }
@@ -112,7 +130,7 @@ int engine_run(einhorn_engine* engine)
             return -1;
         }
 
-        engine_limit_fps(60.0);
+        engine_limit_fps(30.0);
     }
       
     return 0;

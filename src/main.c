@@ -50,6 +50,7 @@ int main(int argc, const char** argv)
     einhorn_engine* engine = engine_init(config);
     if (!engine) {
         fprintf(stderr, "Engine initialization failed.\n");
+
         return -1;
     }
 
