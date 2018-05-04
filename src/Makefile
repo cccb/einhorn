@@ -13,7 +13,7 @@ boot.h: boot.lua
 %.o: %.c
 	$(CC) -c $(CFLAGS) -o $@ $^
 
-$(PROG): main.o config.o engine.o framebuffer.o
+$(PROG): main.o config.o engine.o framebuffer.o net.o
 	$(CC) $(LDFLAGS) -o $(PROG) $^
 
 
