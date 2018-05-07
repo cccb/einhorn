@@ -6,12 +6,16 @@
 #include <lauxlib.h>
 
 #include "config.h"
+#include "net.h"
 
 typedef struct {
     lua_State* L;
     einhorn_config* config;
 
     double* framebuffer;
+
+    int         net_socket;
+    net_packet* net_packet;
 } einhorn_engine;
 
 

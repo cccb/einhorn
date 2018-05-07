@@ -30,12 +30,16 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 
 #include "net.h"
 
-net_packet* net_packet_alloc(double* buffer)
+net_packet* net_packet_alloc(const double* buffer)
 {
     size_t width = buffer[0];
     size_t height = buffer[1];
@@ -44,7 +48,7 @@ net_packet* net_packet_alloc(double* buffer)
     size_t buffer_size = width * height * fragment_size + 2;  
 
     // Allocate buffer
-    const char* data = malloc(buffer_size * sizeof(char));
+    uint8_t* data = malloc(buffer_size * sizeof(uint8_t));
 
     // Allocate packet
     net_packet* packet = (net_packet*)malloc(sizeof(net_packet));
@@ -60,18 +64,45 @@ net_packet* net_packet_alloc(double* buffer)
 
 void net_packet_free(net_packet* packet)
 {
-    free(packet->data);
+    free((void*)packet->data);
     free(packet);
 }
 
 void net_packet_encode(net_packet* packet, const double* buffer)
 {
-    size_t buffer_len = (size_t)buffer[0] * (size_t)buffer[1];
-    uint16_t* packet_data = (uint16_t)(packet->data + 2);
+    size_t buffer_len = (size_t)buffer[0] * (size_t)buffer[1] * 4;
+    uint16_t* packet_data = (uint16_t*)(packet->data + 2);
 
     for (size_t i = 0; i < buffer_len; i++) {
         packet_data[i] = htons((uint16_t)(buffer[i+2] * 65535.0));
     }
 }
 
+int net_socket_open()
+{
+     return socket(AF_INET, SOCK_DGRAM, 0);
+}
+
+size_t net_packet_send(int sock,
+                       const char* hostname,
+                       int port,
+                       const net_packet* packet)
+{
+    // We do gethostbyname each time. Maybe the address of the
+    // host changed after a while...
+    struct hostent *host = gethostbyname(hostname);
+    struct sockaddr_in addr;
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);              
+    memcpy(&addr.sin_addr.s_addr,
+           host->h_addr,
+           host->h_length);
+
+    return sendto(sock,
+                  packet->data, packet->len, 0,
+                  (const struct sockaddr*)&addr,
+                  sizeof(struct sockaddr_in));
+}
 
