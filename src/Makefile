@@ -6,8 +6,8 @@ CFLAGS ?= -Wall -std=c11 -g -Wextra -D_BSD_SOURCE
 LDFLAGS ?= -lm
 
 # LUA
-CFLAGS += $(shell pkg-config --cflags lua53)
-LDFLAGS += $(shell pkg-config --libs lua53)
+CFLAGS += $(shell pkg-config --cflags lua5.3)
+LDFLAGS += $(shell pkg-config --libs lua5.3)
 
 
 all: $(PROG)
