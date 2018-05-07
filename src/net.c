@@ -106,3 +106,39 @@ size_t net_packet_send(int sock,
                   sizeof(struct sockaddr_in));
 }
 
+
+net_conn* net_init(einhorn_config* config, const double* buffer)
+{
+    // Initialize network connection
+    net_conn* conn = malloc(sizeof(net_conn));
+    conn->socket = net_socket_open();
+    if(!conn->socket) {
+        free(conn);
+        return NULL;
+    }
+
+    conn->config = config;
+    conn->buffer = buffer;
+    
+    conn->packet = net_packet_alloc(buffer);
+    if (!conn->packet) {
+        free(conn);
+        return NULL;
+    }
+
+    return conn;
+}
+
+size_t net_update(net_conn* conn)
+{
+    // Encode packet
+    net_packet_encode(conn->packet,
+                      conn->buffer);
+
+    return net_packet_send(conn->socket,
+                           conn->config->host,
+                           conn->config->port,
+                           conn->packet);
+
+}
+

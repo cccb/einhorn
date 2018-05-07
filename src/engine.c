@@ -60,8 +60,7 @@ einhorn_engine* engine_init(einhorn_config* config)
     }
 
     // Initialize network encoding
-    engine->net_socket = net_socket_open();
-    engine->net_packet = net_packet_alloc(engine->framebuffer);
+    engine->conn = net_init(config, engine->framebuffer);
 
     return engine;
 }
@@ -123,13 +122,9 @@ int engine_run(einhorn_engine* engine)
         }
 
         // Encode result and transmit packet
-        net_packet_encode(engine->net_packet,
-                          engine->framebuffer);
-        net_packet_send(engine->net_socket,
-                        engine->config->host,
-                        engine->config->port,
-                        engine->net_packet);
+        net_update(engine->conn);
 
+        // Wait a bit
         engine_limit_fps(engine->config->fps);
     }
       

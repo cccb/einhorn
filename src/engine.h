@@ -14,8 +14,7 @@ typedef struct {
 
     double* framebuffer;
 
-    int         net_socket;
-    net_packet* net_packet;
+    net_conn* conn;
 } einhorn_engine;
 
 

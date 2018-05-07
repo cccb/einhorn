@@ -1,6 +1,8 @@
 #ifndef NET_H
 #define NET_H
 
+#include "config.h"
+
 enum {
     NET_FRAME_RGB  = 0x01,
     NET_FRAME_RGBW = 0x02,
@@ -18,6 +20,14 @@ typedef struct {
     size_t len;
 } net_packet;
 
+typedef struct {
+    einhorn_config* config;
+
+    int socket;
+    const double* buffer;
+
+    net_packet *packet;
+} net_conn;
 
 net_packet* net_packet_alloc(const double* buffer);
 void net_packet_free(net_packet* packet);
@@ -27,5 +37,8 @@ size_t net_packet_send(int sock,
                        const char* hostname,
                        int port,
                        const net_packet* packet);
+
+net_conn* net_init(einhorn_config* config, const double* buffer);
+size_t net_update(net_conn* conn);
 
 #endif
