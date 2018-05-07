@@ -95,9 +95,9 @@ size_t net_packet_send(int sock,
 
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);              
+    addr.sin_port = htons(port);
     memcpy(&addr.sin_addr.s_addr,
-           host->h_addr,
+           host->h_addr_list[0],
            host->h_length);
 
     return sendto(sock,

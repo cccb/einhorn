@@ -2,8 +2,13 @@
 PROG = einhorn
 CC = gcc
 
-CFLAGS ?= -Wall -std=c11 -g
-LDFLAGS ?= -llua
+CFLAGS ?= -Wall -std=c11 -g -Wextra -D_BSD_SOURCE
+LDFLAGS ?= -lm
+
+# LUA
+CFLAGS += $(shell pkg-config --cflags lua53)
+LDFLAGS += $(shell pkg-config --libs lua53)
+
 
 all: $(PROG)
 
@@ -14,7 +19,7 @@ boot.h: boot.lua
 	$(CC) -c $(CFLAGS) -o $@ $^
 
 $(PROG): main.o config.o engine.o framebuffer.o net.o
-	$(CC) $(LDFLAGS) -o $(PROG) $^
+	$(CC) -o $(PROG) $^ $(LDFLAGS)
 
 
 clean:

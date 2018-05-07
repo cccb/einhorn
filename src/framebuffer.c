@@ -3,9 +3,9 @@
 
 /*
  * Framebuffer datastructure layout
- * 
+ *
  * To keep things simple, the framebuffer is just an
- * array of doubles with the length of: 
+ * array of doubles with the length of:
  * width * height * 4 + 2.
  *
  * This first two doubles are the width and height of the
@@ -139,16 +139,16 @@ int l_framebuffer_setpixel(lua_State* L)
     // Get framebuffer
     double* buffer = (double*)lua_touserdata(L, 1);
     luaL_argcheck(L, buffer != NULL, 1, "expected a framebuffer");
- 
+
     size_t width = (size_t)buffer[0];
     size_t height = (size_t)buffer[1];
 
     // Get position
-    int x = (int)luaL_checknumber(L, 2) - 1;
-    int y = (int)luaL_checknumber(L, 3) - 1;
+    unsigned int x = (unsigned int)luaL_checknumber(L, 2) - 1;
+    unsigned int y = (unsigned int)luaL_checknumber(L, 3) - 1;
 
-    luaL_argcheck(L, x >= 0 && x < width,  2, "invalid index for position.x");
-    luaL_argcheck(L, y >= 0 && y < height, 2, "invalid index for position.y");
+    luaL_argcheck(L, x < width,  2, "invalid index for position.x");
+    luaL_argcheck(L, y < height, 2, "invalid index for position.y");
 
     // Get r, g, b
     double r = luaL_optnumber(L, 4, 0);
@@ -169,16 +169,16 @@ int l_framebuffer_getpixel(lua_State* L)
     // Get framebuffer
     double* buffer = (double*)lua_touserdata(L, 1);
     luaL_argcheck(L, buffer != NULL, 1, "expected a framebuffer");
- 
+
     size_t width = (size_t)buffer[0];
     size_t height = (size_t)buffer[1];
 
     // Get position
-    int x = (int)luaL_checknumber(L, 2) - 1;
-    int y = (int)luaL_checknumber(L, 3) - 1;
+    unsigned int x = (unsigned int)luaL_checknumber(L, 2) - 1;
+    unsigned int y = (unsigned int)luaL_checknumber(L, 3) - 1;
 
-    luaL_argcheck(L, x >= 0 && x < width,  2, "invalid index for position.x");
-    luaL_argcheck(L, y >= 0 && y < height, 2, "invalid index for position.y");
+    luaL_argcheck(L, x < width,  2, "invalid index for position.x");
+    luaL_argcheck(L, y < height, 2, "invalid index for position.y");
 
     lua_pushnumber(L, framebuffer_get(buffer, x, y, 0));
     lua_pushnumber(L, framebuffer_get(buffer, x, y, 1));
@@ -193,10 +193,10 @@ int l_framebuffer_getsize(lua_State* L)
     // Get framebuffer
     double* buffer = (double*)lua_touserdata(L, 1);
     luaL_argcheck(L, buffer != NULL, 1, "expected a framebuffer");
- 
+
     size_t width = (size_t)buffer[0];
     size_t height = (size_t)buffer[1];
-   
+
     lua_pushnumber(L, width);
     lua_pushnumber(L, height);
 
