@@ -61,6 +61,10 @@ einhorn_engine* engine_init(einhorn_config* config)
 
     // Initialize network encoding
     engine->conn = net_init(config, engine->framebuffer);
+    if (!engine->conn) {
+        fprintf(stderr, "Network initialization failed.\n");
+        return NULL;
+    }
 
     return engine;
 }
