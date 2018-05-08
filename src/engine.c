@@ -27,7 +27,7 @@ einhorn_engine* engine_init(einhorn_config* config)
     // Initialize engine
     engine->config = config;
 
-    // Initialize Lua state    
+    // Initialize Lua state
     engine->L = luaL_newstate();
     luaL_openlibs(engine->L);
 
@@ -84,7 +84,7 @@ void engine_limit_fps(double fps)
 {
     double timeout = 1.0 / fps;
     // Convert to timeval
-    double nsec = fmod(timeout, 1.0) * 1000000000.0; 
+    double nsec = fmod(timeout, 1.0) * 1000000000.0;
     struct timespec timeout_val = {
         .tv_sec = (int)timeout,
         .tv_nsec = (int)nsec,
@@ -104,7 +104,7 @@ int engine_call_render(einhorn_engine* engine, double t)
     lua_pushnumber(engine->L, t);
 
     // Call render function with framebuffer and time
-    return lua_pcall(engine->L, 2, 0, 0); 
+    return lua_pcall(engine->L, 2, 0, 0);
 }
 
 /*
@@ -131,7 +131,7 @@ int engine_run(einhorn_engine* engine)
         // Wait a bit
         engine_limit_fps(engine->config->fps);
     }
-      
+
     return 0;
 }
 
