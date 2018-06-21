@@ -9,3 +9,12 @@ function fblib:mappixel(fn)
     end
 end
 
+
+-- GLSL Functions
+function fract(x)
+    return x - math.floor(x)
+end
+
+
+
+
