@@ -6,8 +6,8 @@ CFLAGS ?= -Wall -std=c11 -g -Wextra -D_BSD_SOURCE
 LDFLAGS ?= -lm
 
 # LUA
-CFLAGS += $(shell pkg-config --cflags lua5.3)
-LDFLAGS += $(shell pkg-config --libs lua5.3)
+CFLAGS += $(shell pkg-config --cflags lua53)
+LDFLAGS += $(shell pkg-config --libs lua53)
 
 
 all: $(PROG)
@@ -17,6 +17,9 @@ boot.h: boot.lua
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -o $@ $^
+
+engine.c: boot.h
+
 
 $(PROG): main.o config.o engine.o framebuffer.o net.o
 	$(CC) -o $(PROG) $^ $(LDFLAGS)
