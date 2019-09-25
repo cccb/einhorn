@@ -6,3 +6,5 @@
 src/boot.h
 
 einhorn
+
+.Makefile.local

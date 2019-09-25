@@ -1,6 +1,8 @@
 
+# Include local build adjustments
+-include .Makefile.local
+
 PROG = einhorn
-CC = gcc
 
 CFLAGS ?= -Wall -std=c11 -g -Wextra -D_BSD_SOURCE
 LDFLAGS ?= -lm
@@ -8,7 +10,6 @@ LDFLAGS ?= -lm
 # LUA
 CFLAGS += $(shell pkg-config --cflags lua53)
 LDFLAGS += $(shell pkg-config --libs lua53)
-
 
 all: $(PROG)
 
